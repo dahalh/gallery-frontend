@@ -1,13 +1,18 @@
 import "./App.css";
-import { Button } from "react-bootstrap";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import RegistrationPage from "./pages/register-login/RegistrationPage";
+import LoginPage from "./pages/register-login/LoginPage";
 
 const App = () => {
   return (
     <div className="App">
-      Hello
-      <Button variant="primary">
-        <i className="fa-brands fa-react"></i>react
-      </Button>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/register" element={<RegistrationPage />} />
+          <Route path="/" element={<LoginPage />} />
+          <Route path="*" element={<h1>404 Page Not Found</h1>} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 };
