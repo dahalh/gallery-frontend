@@ -1,14 +1,26 @@
 import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
-import { Alert, Container, Form } from "react-bootstrap";
+import { Alert, Container, Form, Spinner, Button } from "react-bootstrap";
 import "./registerForm.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { postUserAction } from "../../pages/register-login/signInUpAction";
+
+const initialState = {
+  fName: "John",
+  lName: "Doe",
+  email: "john@example.com",
+  password: "123456",
+  confirmPassword: "123456",
+  address: "123 Main Street",
+  phone: "0123456789",
+};
 
 export const RegisterForm = () => {
   const dispatch = useDispatch();
-  const [form, setForm] = useState({});
+  const [form, setForm] = useState(initialState);
   const [error, setError] = useState(false);
+
+  // pull data from redux store
+  const { isLoading, response } = useSelector((state) => state.signInUp);
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -22,15 +34,15 @@ export const RegisterForm = () => {
   const handleOnSubmit = (e) => {
     e.preventDefault();
 
-    const { password, confirmPassword } = form;
-
-    if (password !== confirmPassword) {
+    if (form.password !== form.confirmPassword) {
       return setError(true);
     }
     setError(false);
 
+    const { confirmPassword, ...rest } = form;
+
     // we dispatch action to the reducer
-    dispatch(postUserAction());
+    dispatch(postUserAction(rest));
   };
 
   return (
@@ -44,6 +56,7 @@ export const RegisterForm = () => {
             <Form.Control
               onChange={handleOnChange}
               name="fName"
+              value={form.fName}
               placeholder="John"
               required
             />
@@ -54,6 +67,7 @@ export const RegisterForm = () => {
               onChange={handleOnChange}
               name="lName"
               type="lName"
+              value={form.lName}
               placeholder="Doe"
               required
             />
@@ -64,6 +78,7 @@ export const RegisterForm = () => {
               onChange={handleOnChange}
               name="email"
               type="email"
+              value={form.email}
               placeholder="john@example.com"
               required
             />
@@ -74,6 +89,7 @@ export const RegisterForm = () => {
               onChange={handleOnChange}
               name="phone"
               placeholder="0412345678"
+              value={form.phone}
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -82,6 +98,7 @@ export const RegisterForm = () => {
               onChange={handleOnChange}
               name="address"
               placeholder="123 Main Street"
+              value={form.email}
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -100,6 +117,7 @@ export const RegisterForm = () => {
               name="password"
               type="password"
               placeholder="Password"
+              value={form.password}
               required
             />
           </Form.Group>
@@ -110,6 +128,7 @@ export const RegisterForm = () => {
               name="confirmPassword"
               type="password"
               placeholder="Password"
+              value={form.confirmPassword}
               required
             />
             <Alert className="mt-4" variant="danger" show={error}>
@@ -118,10 +137,17 @@ export const RegisterForm = () => {
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicPassword">
             <Button variant="primary" type="submit">
-              Sign Up
+              {isLoading ? (
+                <Spinner variant="danger" animation="border" />
+              ) : (
+                "Sign Up"
+              )}
             </Button>
           </Form.Group>
         </Form>
+        <div className="text-end">
+          Already have an account? <a href="/">Login Here</a>
+        </div>
       </div>
     </Container>
   );
